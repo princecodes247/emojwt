@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { decode, sign, verify } from "./index";
-import { fromEmoji, toEmoji } from "@emojwt/common";
+import { fromEmoji, toEmoji } from "./encoder";
 
 describe("emojwt node", () => {
   const secret = "supersecret";
