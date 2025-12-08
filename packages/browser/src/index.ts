@@ -3,9 +3,9 @@ import {
   encodeBase64Url,
   fromEmoji,
   toEmoji,
-} from "@emojwt/common";
+} from "./encoder";
 
-export { EMOJI_MAP } from "@emojwt/common";
+export { EMOJI_MAP } from "./consts";
 
 export interface SignOptions {
   expiresIn?: string | number;
