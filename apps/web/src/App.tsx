@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { sign, verify, decode } from '@emojwt/browser';
+import { sign, verify, decode, EMOJI_MAP } from '@emojwt/browser';
 import './App.css';
 
 function App() {
@@ -9,6 +9,16 @@ function App() {
   const [decodedHeader] = useState('{\n  "alg": "HS256",\n  "typ": "JWT"\n}');
   const [isVerified, setIsVerified] = useState(true);
   const [error, setError] = useState('');
+  const [logoEmoji, setLogoEmoji] = useState(EMOJI_MAP[0]);
+
+  useEffect(() => {
+    let index = 0;
+    const interval = setInterval(() => {
+      index = (index + 1) % EMOJI_MAP.length;
+      setLogoEmoji(EMOJI_MAP[index]);
+    }, 500); // Change every 500ms
+    return () => clearInterval(interval);
+  }, []);
 
   // Initial sign
   useEffect(() => {
@@ -24,15 +34,12 @@ function App() {
       setIsVerified(true);
       setError('');
     } catch (e: any) {
-      // Don't update token if JSON is invalid, just show error or ignore
-      // But for the playground, we might want to let them type invalid JSON
     }
   };
 
   const handleTokenChange = async (newToken: string) => {
     setToken(newToken);
     try {
-      // Try to verify first
       try {
         const d = await verify(newToken, secret);
         setPayloadStr(JSON.stringify(d, null, 2));
@@ -56,17 +63,16 @@ function App() {
 
   const handleSecretChange = (newSecret: string) => {
     setSecret(newSecret);
-    // Re-verify current token with new secret
     handleTokenChange(token);
     // Or re-sign? jwt.io re-signs when you change payload, but re-verifies when you change secret if token is edited?
     // Let's keep it simple: if I change secret, I probably want to re-sign the current payload to see the new token
-    handleSign(payloadStr, newSecret);
+    handleSign(payloadStr, secret);
   };
 
   return (
-    <div id="">
+    <div id="root">
       <header>
-        <h1><span className="logo-emoji">🥳</span> emojwt</h1>
+        <h1><span className="logo-emoji">{logoEmoji}</span> emojwt</h1>
       </header>
 
       {!isVerified && !error && <div className="error-banner">Invalid Signature</div>}
@@ -111,17 +117,14 @@ function App() {
             <div className="section-header">VERIFY SIGNATURE</div>
             <div style={{ padding: '1rem' }}>
               <pre className="color-blue" style={{ margin: 0, fontSize: '0.9rem' }}>
-                HMACSHA256(
-                <br />  base64UrlEncode(header) + "." +
-                <br />  base64UrlEncode(payload),
-                <br />  <input 
+                <input 
                     type="text" 
                     className="secret-input"
                     value={secret}
                     onChange={(e) => handleSecretChange(e.target.value)}
                     placeholder="your-256-bit-secret"
                   />
-                <br />)
+                <br />
               </pre>
             </div>
           </div>

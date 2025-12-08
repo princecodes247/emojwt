@@ -5,6 +5,8 @@ import {
   toEmoji,
 } from "@emojwt/common";
 
+export { EMOJI_MAP } from "@emojwt/common";
+
 export interface SignOptions {
   expiresIn?: string | number;
 }
