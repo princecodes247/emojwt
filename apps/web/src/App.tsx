@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { sign, verify, decode, EMOJI_MAP } from '@emojwt/browser';
 import './App.css';
+import { Analytics } from "@vercel/analytics/react"
 
 function App() {
   const [secret, setSecret] = useState('supersecret');
@@ -130,6 +131,7 @@ function App() {
           </div>
         </div>
       </div>
+    <Analytics />
     </div>
   );
 }
