@@ -1,0 +1,27 @@
+{
+  "name": "@emojwt/node",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest",
+    "lint": "biome lint .",
+    "format": "biome format --write ."
+  },
+  "dependencies": {
+    "@emojwt/common": "*"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.3.8",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0",
+    "@types/node": "^20.0.0"
+  }
+}

@@ -24,7 +24,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
     "paths": {
-      "@emojwt/core": ["../../packages/core/src/index.ts"]
+      "@emojwt/browser": ["../../packages/browser/src/index.ts"]
     }
   },
   "include": ["src"]

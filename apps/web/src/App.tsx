@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { sign, verify } from '@emojwt/core';
+import { sign, verify } from '@emojwt/browser';
 import './App.css';
 
 function App() {

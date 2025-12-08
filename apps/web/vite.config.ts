@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@emojwt/core': path.resolve(__dirname, '../../packages/core/src/index.ts')
+      '@emojwt/browser': path.resolve(__dirname, '../../packages/browser/src/index.ts')
     }
   }
 })

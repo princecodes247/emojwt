@@ -4,7 +4,7 @@ import {
   encodeBase64Url,
   fromEmoji,
   toEmoji,
-} from "./encoder";
+} from "@emojwt/common";
 
 export interface SignOptions {
   expiresIn?: string | number; // Not implemented for MVP, but good to have in interface

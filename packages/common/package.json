@@ -1,5 +1,5 @@
 {
-  "name": "@emojwt/core",
+  "name": "@emojwt/common",
   "version": "1.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -15,14 +15,10 @@
     "lint": "biome lint .",
     "format": "biome format --write ."
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "devDependencies": {
-    "@biomejs/biome": "^2.3.8",
-    "@types/node": "^24.10.1",
-    "typescript": "^5.9.3",
-    "vitest": "^3.2.4"
+    "@biomejs/biome": "2.3.8",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0",
+    "@types/node": "^20.0.0"
   }
 }

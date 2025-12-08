@@ -3,7 +3,7 @@ import {
   encodeBase64Url,
   fromEmoji,
   toEmoji,
-} from "./encoder";
+} from "@emojwt/common";
 
 export interface SignOptions {
   expiresIn?: string | number;
