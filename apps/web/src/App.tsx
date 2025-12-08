@@ -26,12 +26,14 @@ function App() {
     handleSign(payloadStr, secret);
   }, []);
 
-  const handleSign = async (pStr: string, s: string) => {
+  const handleSign = async (pStr: string, s: string, ignorePayload = false) => {
     try {
       const p = JSON.parse(pStr);
       const t = await sign(p, s);
       setToken(t);
-      setPayloadStr(JSON.stringify(p, null, 2));
+      if (!ignorePayload) {
+        setPayloadStr(JSON.stringify(p, null, 2));
+      }
       setIsVerified(true);
       setError('');
     } catch (e: any) {
@@ -59,7 +61,7 @@ function App() {
 
   const handlePayloadChange = (newPayload: string) => {
     setPayloadStr(newPayload);
-    handleSign(newPayload, secret);
+    handleSign(newPayload, secret, true);
   };
 
   const handleSecretChange = (newSecret: string) => {
