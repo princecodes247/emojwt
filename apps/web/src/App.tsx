@@ -1,83 +1,132 @@
-import { useState } from 'react';
-import { sign, verify } from '@emojwt/browser';
+import { useState, useEffect } from 'react';
+import { sign, verify, decode } from '@emojwt/browser';
 import './App.css';
 
 function App() {
   const [secret, setSecret] = useState('supersecret');
-  const [payload, setPayload] = useState('{"sub": "123", "name": "Alice"}');
+  const [payloadStr, setPayloadStr] = useState('{\n  "sub": "1234567890",\n  "name": "John Doe",\n  "iat": 1516239022\n}');
   const [token, setToken] = useState('');
-  const [decoded, setDecoded] = useState('');
+  const [decodedHeader] = useState('{\n  "alg": "HS256",\n  "typ": "JWT"\n}');
+  const [isVerified, setIsVerified] = useState(true);
   const [error, setError] = useState('');
 
-  const handleSign = async () => {
+  // Initial sign
+  useEffect(() => {
+    handleSign(payloadStr, secret);
+  }, []);
+
+  const handleSign = async (pStr: string, s: string) => {
     try {
-      const p = JSON.parse(payload);
-      const t = await sign(p, secret);
+      const p = JSON.parse(pStr);
+      const t = await sign(p, s);
       setToken(t);
+      setPayloadStr(JSON.stringify(p, null, 2));
+      setIsVerified(true);
       setError('');
     } catch (e: any) {
-      setError(e.message);
+      // Don't update token if JSON is invalid, just show error or ignore
+      // But for the playground, we might want to let them type invalid JSON
     }
   };
 
-  const handleVerify = async () => {
+  const handleTokenChange = async (newToken: string) => {
+    setToken(newToken);
     try {
-      const d = await verify(token, secret);
-      setDecoded(JSON.stringify(d, null, 2));
-      setError('');
+      // Try to verify first
+      try {
+        const d = await verify(newToken, secret);
+        setPayloadStr(JSON.stringify(d, null, 2));
+        setIsVerified(true);
+        setError('');
+      } catch (verifyError) {
+        setIsVerified(false);
+        // If verification fails, try to just decode
+        const d = decode(newToken);
+        setPayloadStr(JSON.stringify(d, null, 2));
+      }
     } catch (e: any) {
-      setError(e.message);
-      setDecoded('');
+      setError('Invalid token structure');
     }
+  };
+
+  const handlePayloadChange = (newPayload: string) => {
+    setPayloadStr(newPayload);
+    handleSign(newPayload, secret);
+  };
+
+  const handleSecretChange = (newSecret: string) => {
+    setSecret(newSecret);
+    // Re-verify current token with new secret
+    handleTokenChange(token);
+    // Or re-sign? jwt.io re-signs when you change payload, but re-verifies when you change secret if token is edited?
+    // Let's keep it simple: if I change secret, I probably want to re-sign the current payload to see the new token
+    handleSign(payloadStr, newSecret);
   };
 
   return (
-    <div className="container">
-      <h1>emojwt Playground 🥳</h1>
-      
-      <div className="card">
-        <h2>Sign</h2>
-        <div className="form-group">
-          <label>Secret:</label>
-          <input 
-            type="text" 
-            value={secret} 
-            onChange={(e) => setSecret(e.target.value)} 
+    <div id="">
+      <header>
+        <h1><span className="logo-emoji">🥳</span> emojwt</h1>
+      </header>
+
+      {!isVerified && !error && <div className="error-banner">Invalid Signature</div>}
+      {error && <div className="error-banner">{error}</div>}
+
+      <div className="main-container">
+        {/* Left Panel: Encoded */}
+        <div className="editor-panel">
+          <h2>Encoded</h2>
+          <textarea
+            className="token-input"
+            value={token}
+            onChange={(e) => handleTokenChange(e.target.value)}
+            spellCheck={false}
           />
         </div>
-        <div className="form-group">
-          <label>Payload (JSON):</label>
-          <textarea 
-            value={payload} 
-            onChange={(e) => setPayload(e.target.value)} 
-            rows={4}
-          />
-        </div>
-        <button onClick={handleSign}>Sign Token</button>
-      </div>
 
-      <div className="card">
-        <h2>Token</h2>
-        <textarea 
-          value={token} 
-          onChange={(e) => setToken(e.target.value)} 
-          rows={6}
-          placeholder="Generated token will appear here..."
-        />
-      </div>
-
-      <div className="card">
-        <h2>Verify</h2>
-        <button onClick={handleVerify}>Verify Token</button>
-        {decoded && (
-          <div className="result">
-            <h3>Decoded Payload:</h3>
-            <pre>{decoded}</pre>
+        {/* Right Panel: Decoded */}
+        <div className="editor-panel">
+          <h2>Decoded</h2>
+          
+          <div className="decoded-section">
+            <div className="section-header">HEADER: ALGORITHM & TOKEN TYPE</div>
+            <textarea
+              className="json-editor color-pink"
+              value={decodedHeader}
+              readOnly
+            />
           </div>
-        )}
-      </div>
 
-      {error && <div className="error">{error}</div>}
+          <div className="decoded-section">
+            <div className="section-header">PAYLOAD: DATA</div>
+            <textarea
+              className="json-editor color-purple"
+              value={payloadStr}
+              onChange={(e) => handlePayloadChange(e.target.value)}
+              spellCheck={false}
+            />
+          </div>
+
+          <div className="decoded-section">
+            <div className="section-header">VERIFY SIGNATURE</div>
+            <div style={{ padding: '1rem' }}>
+              <pre className="color-blue" style={{ margin: 0, fontSize: '0.9rem' }}>
+                HMACSHA256(
+                <br />  base64UrlEncode(header) + "." +
+                <br />  base64UrlEncode(payload),
+                <br />  <input 
+                    type="text" 
+                    className="secret-input"
+                    value={secret}
+                    onChange={(e) => handleSecretChange(e.target.value)}
+                    placeholder="your-256-bit-secret"
+                  />
+                <br />)
+              </pre>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
