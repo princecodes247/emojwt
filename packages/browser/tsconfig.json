@@ -10,10 +10,12 @@
     "skipLibCheck": true,
 
     /* Bundler mode */
-    "allowImportingTsExtensions": true,
+    "allowImportingTsExtensions": false,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
-    "noEmit": true,
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
 
     "forceConsistentCasingInFileNames": true
   },
