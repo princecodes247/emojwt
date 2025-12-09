@@ -8,10 +8,12 @@
   "scripts": {
     "test": "npm test --workspaces",
     "lint": "biome lint .",
-    "format": "biome format --write ."
+    "format": "biome format --write .",
+    "local-release": "changeset version && changeset publish"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.8",
+    "@changesets/cli": "^2.29.8",
     "typescript": "^5.0.0"
   }
 }
